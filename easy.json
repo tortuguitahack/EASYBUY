@@ -1,0 +1,173 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 10,
+              "unit": "minutes"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Cada 10 Min (Masificación)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        96
+      ],
+      "id": "822b57b4-a8a6-452b-989f-514c476c47cf"
+    },
+    {
+      "parameters": {
+        "functionCode": "const nichos = [\n  \"Ganar dinero con IA freelance sin inversión\",\n  \"Side hustles reales 2025 con teléfono\",\n  \"Monetiza tu conocimiento en redes sociales\",\n  \"Crypto staking bajo riesgo para principiantes\",\n  \"Affiliate marketing ético sin sitio web\",\n  \"Print on demand paso a paso gratis\",\n  \"Micro-SaaS ideas rentables 2025\",\n  \"Content creation que paga rápido\"\n];\n\nconst nicho = nichos[Math.floor(Math.random() * nichos.length)];\nconst id = 'EB-' + String(Math.floor(Math.random() * 9000) + 1000);\nreturn [{ json: { nicho, id } }];"
+      },
+      "name": "Seleccionar Nicho & ID Único",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        16,
+        96
+      ],
+      "id": "d67eabe5-18bc-48a1-8bd0-badbde4115e4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"Tú eres EASYBUY AGENTE SUPREMO – mente colectiva de 1000 expertos en monetización real y ética.\\n\\nGenera un producto digital único de alta conversión sobre:\\n\\\"{{$json.nicho}}\\\"\\n\\nPrecio fijo: $6.66 (valor percibido $497).\\n\\nSalida estructurada:\\nTÍTULO: [Título viral]\\nDESCRIPCIÓN_BREVE: [100 palabras para botón explicación]\\nDESCRIPCIÓN_VENTA: [300 palabras hipnóticas]\\nCOVER_PROMPT: [Prompt para Leonardo.ai – estilo profesional, confianza azul/verde]\\nCONTENIDO_MARKDOWN: [Guía completa 30 páginas, pasos reales, checklists, sin inversión inicial]\\nQR_DATA: [Datos para QR: producto ID {{$json.id}}, precio $6.66, wallet Blockchain 4335b5bf-1270-4187-b869-7b12228fb5e9]\",",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        96
+      ],
+      "id": "c92b7206-4ebb-4060-b242-840e424855d0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-pro-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        256
+      ],
+      "id": "59025706-81be-43a9-ac2a-a9c53d7179e9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "3q0S5eKocE7LUhVr",
+          "name": "Google GeminiApi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "uJC8IBjQALn84F5G"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        256
+      ],
+      "id": "3113f72d-dadb-4054-b712-ff246ff65908",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "resource": "userInfo"
+      },
+      "type": "n8n-nodes-docuwriter-ai.docuWriter",
+      "typeVersion": 1,
+      "position": [
+        528,
+        96
+      ],
+      "id": "b0cae151-42b3-4d4c-8920-8311238901a6",
+      "name": "Get user info",
+      "credentials": {
+        "docuWriterApi": {
+          "id": "vb4KrfCVotEfV44V",
+          "name": "DocuWriter.ai account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Cada 10 Min (Masificación)": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar Nicho & ID Único",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar Nicho & ID Único": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get user info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get user info": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c26ce17dffbca2d26ec8991f50be1a90b4c02c15484b25946bce44bad2448e5"
+  }
+}
