@@ -1,0 +1,137 @@
+{
+  "name": "EASYBUY - WORKFLOW SUPREMO v1",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Trigger Manual (Prueba)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 10,
+              "unit": "minutes"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Cada 10 Min (Masificación)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [200, 100]
+    },
+    {
+      "parameters": {
+        "functionCode": "const nichos = [\n  \"Ganar dinero con IA freelance sin inversión\",\n  \"Side hustles reales 2025 con teléfono\",\n  \"Monetiza tu conocimiento en redes sociales\",\n  \"Crypto staking bajo riesgo para principiantes\",\n  \"Affiliate marketing ético sin sitio web\",\n  \"Print on demand paso a paso gratis\",\n  \"Micro-SaaS ideas rentables 2025\",\n  \"Content creation que paga rápido\"\n];\n\nconst nicho = nichos[Math.floor(Math.random() * nichos.length)];\nconst id = 'EB-' + String(Math.floor(Math.random() * 9000) + 1000);\nreturn [{ json: { nicho, id } }];"
+      },
+      "name": "Seleccionar Nicho & ID Único",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [400, 200]
+    },
+    {
+      "parameters": {
+        "modelName": "llama3.2:3b",
+        "prompt": "Tú eres EASYBUY AGENTE SUPREMO – mente colectiva de 1000 expertos en monetización real y ética.\n\nGenera un producto digital único de alta conversión sobre:\n\"{{$json.nicho}}\"\n\nPrecio fijo: $6.66 (valor percibido $497).\n\nSalida estructurada:\nTÍTULO: [Título viral]\nDESCRIPCIÓN_BREVE: [100 palabras para botón explicación]\nDESCRIPCIÓN_VENTA: [300 palabras hipnóticas]\nCOVER_PROMPT: [Prompt para Leonardo.ai – estilo profesional, confianza azul/verde]\nCONTENIDO_MARKDOWN: [Guía completa 30 páginas, pasos reales, checklists, sin inversión inicial]\nQR_DATA: [Datos para QR: producto ID {{$json.id}}, precio $6.66, wallet Blockchain 4335b5bf-1270-4187-b869-7b12228fb5e9]",
+        "options": {}
+      },
+      "name": "Generar Producto con Agente Supremo",
+      "type": "n8n-nodes-base.ollamaChatModel",
+      "typeVersion": 1,
+      "position": [600, 200],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "filePath": "~/EASYBUY/productos/EB_{{$json.id}}_{{$now.format('YYYY-MM-DD_HH-mm')}}.md",
+        "dataPropertyName": "text",
+        "options": {}
+      },
+      "name": "Guardar Producto Markdown",
+      "type": "n8n-nodes-base.writeFile",
+      "typeVersion": 1,
+      "position": [800, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "@N8ndihack_bot",
+        "text": "¡NUEVO PRODUCTO EASYBUY LISTO! 🎉\n\nID: {{$json.id}}\nNicho: {{$json.nicho}}\nPrecio: $6.66\n\nArchivo guardado.\n\n¡LA MASIFICACIÓN AVANZA!"
+      },
+      "name": "Alerta Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1000, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Apollo Peak Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Trigger Manual (Prueba)": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar Nicho & ID Único",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Cada 10 Min (Masificación)": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar Nicho & ID Único",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar Nicho & ID Único": {
+      "main": [
+        [
+          {
+            "node": "Generar Producto con Agente Supremo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Producto con Agente Supremo": {
+      "main": [
+        [
+          {
+            "node": "Guardar Producto Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Producto Markdown": {
+      "main": [
+        [
+          {
+            "node": "Alerta Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "tags": []
+}
